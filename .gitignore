@@ -1,0 +1,74 @@
+# Environments & Python
+.env
+*.env
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data & Large Media Files
+data/uploads/*
+!data/uploads/.gitkeep
+data/projects/*
+!data/projects/.gitkeep
+data/*.db
+data/*.db-journal
+data/*.wav
+data/*.mp4
+data/*.webm
+data/*.part
+data/*.ytdl
+*.mp4
+*.wav
+*.mp3
+*.mkv
+*.avi
+*.ppm
+*.png.part
+*.part
+*.ytdl
+temp*
+test*
+
+# Frontend & Dependencies
+node_modules/
+**/node_modules/
+**/dist/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Tauri & Rust artifacts
+src-tauri/target/
+**/src-tauri/target/
+
+# Logs & Temp
+*.log
+logs/
+.system_generated/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

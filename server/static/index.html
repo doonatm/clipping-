@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoShorts - AI Short Video Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div id="app" class="app-layout">
+    <!-- Top Navigation -->
+    <header class="top-nav">
+      <div class="brand">
+        <div class="brand-icon">
+          <i data-lucide="clapperboard"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">AutoShorts</span>
+          <span class="brand-badge"><span class="badge-dot"></span> Online Platform</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button id="btnDemo" class="btn btn-secondary btn-sparkle" title="Test drive immediately with sample video and AI moments">
+          <i data-lucide="sparkles"></i>
+          <span>Instant Demo</span>
+        </button>
+        <button id="btnYoutube" class="btn btn-secondary" title="Download video from YouTube">
+          <i data-lucide="youtube"></i>
+          <span>YouTube URL</span>
+        </button>
+        <button id="btnNewProject" class="btn btn-primary">
+          <i data-lucide="upload"></i>
+          <span>Upload Media</span>
+        </button>
+        <button id="btnSettings" class="btn btn-icon" title="Configure AI & Platform Settings">
+          <i data-lucide="settings"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Body -->
+    <div class="main-body">
+      <!-- Sidebar / Projects List -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <i data-lucide="folder-video"></i>
+            <span>Projects</span>
+          </div>
+          <span id="projectCountBadge" class="count-pill">0</span>
+        </div>
+
+        <div id="projectList" class="project-list">
+          <!-- Populated by JS -->
+          <div class="project-list-empty">
+            <i data-lucide="film"></i>
+            <p>No projects yet.<br>Click <strong>Upload Media</strong> or <strong>Instant Demo</strong> to begin!</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Central Content Area -->
+      <main class="content-area">
+        <!-- Empty State View -->
+        <div id="emptyState" class="empty-view">
+          <div class="empty-hero">
+            <div class="empty-icon-glow">
+              <i data-lucide="wand-2"></i>
+            </div>
+            <h2>Turn Long Videos into Viral 9:16 Shorts</h2>
+            <p>Upload a video, transcribe with AI, automatically extract top viral hooks, and render vertical shorts with dynamic captions.</p>
+            
+            <div class="empty-actions-grid">
+              <div class="action-card" id="cardUpload">
+                <div class="action-card-icon"><i data-lucide="upload-cloud"></i></div>
+                <h3>Upload Video / Audio</h3>
+                <p>MP4, MOV, MP3, WAV or M4A files up to 2GB</p>
+                <button class="btn btn-primary btn-sm">Select File</button>
+              </div>
+
+              <div class="action-card" id="cardYoutube">
+                <div class="action-card-icon"><i data-lucide="youtube"></i></div>
+                <h3>YouTube Importer</h3>
+                <p>Paste any YouTube video link to auto-download</p>
+                <button class="btn btn-secondary btn-sm">Enter URL</button>
+              </div>
+
+              <div class="action-card action-card-featured" id="cardDemo">
+                <div class="action-card-icon"><i data-lucide="sparkles"></i></div>
+                <h3>Try Instant Demo</h3>
+                <p>1-Click test with sample video & AI moments</p>
+                <button class="btn btn-primary btn-sm">Load Demo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Project Workspace View -->
+        <div id="projectWorkspace" class="project-workspace" style="display: none;">
+          <!-- Workspace Header -->
+          <div class="workspace-header">
+            <div class="workspace-title-box">
+              <h2 id="currentProjectTitle">Project Title</h2>
+              <button id="btnRenameProject" class="btn-ghost-icon" title="Rename project">
+                <i data-lucide="edit-3"></i>
+              </button>
+              <span id="currentProjectStatusBadge" class="status-pill status-ready">Ready</span>
+              <span id="currentProjectDuration" class="meta-pill"><i data-lucide="clock"></i> 00:00</span>
+            </div>
+
+            <div class="workspace-actions">
+              <button id="btnTranscribe" class="btn btn-secondary btn-sm">
+                <i data-lucide="file-audio"></i>
+                <span>Transcribe</span>
+              </button>
+              <button id="btnDetectMoments" class="btn btn-secondary btn-sm">
+                <i data-lucide="sparkles"></i>
+                <span>Detect Moments</span>
+              </button>
+              <button id="btnRenderBatch" class="btn btn-primary btn-sm">
+                <i data-lucide="scissors"></i>
+                <span>Render Selected Shorts</span>
+              </button>
+              <button id="btnDeleteProject" class="btn-ghost-icon btn-danger-icon" title="Delete Project">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dual Panel Grid -->
+          <div class="workspace-grid">
+            <!-- Left Panel: Source Video & Transcript -->
+            <div class="left-panel">
+              <!-- Video Preview Box -->
+              <div class="media-preview-card">
+                <div class="panel-section-header">
+                  <span class="section-title"><i data-lucide="play-circle"></i> Source Video</span>
+                </div>
+                <div class="video-container">
+                  <video id="sourceVideoPlayer" controls playsinline preload="metadata">
+                    <source src="" type="video/mp4">
+                    Your browser does not support HTML5 video.
+                  </video>
+                </div>
+              </div>
+
+              <!-- Transcript Box -->
+              <div class="transcript-card">
+                <div class="panel-section-header">
+                  <span class="section-title"><i data-lucide="captions"></i> Interactive Transcript</span>
+                  <div class="transcript-meta">
+                    <span id="transcriptWordCount">0 words</span>
+                  </div>
+                </div>
+                <div id="transcriptContent" class="transcript-body">
+                  <div class="empty-transcript">
+                    <p>No transcript generated yet. Click <strong>Transcribe</strong> to analyze speech.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Panel: Viral Moments & Clips -->
+            <div class="right-panel">
+              <div class="panel-section-header sticky-header">
+                <div class="header-left">
+                  <span class="section-title"><i data-lucide="flame"></i> AI Viral Moments</span>
+                  <span id="candidateCountBadge" class="count-pill">0</span>
+                </div>
+                <div class="header-controls">
+                  <div class="control-unit">
+                    <label for="configClipCount"><i data-lucide="layers" size="13"></i> Clips:</label>
+                    <select id="configClipCount" class="custom-select">
+                      <option value="1">1 Clip</option>
+                      <option value="3" selected>3 Clips</option>
+                      <option value="5">5 Clips</option>
+                      <option value="8">8 Clips</option>
+                      <option value="10">10 Clips</option>
+                    </select>
+                  </div>
+
+                  <div class="control-unit">
+                    <label for="configDuration"><i data-lucide="timer" size="13"></i> Duration:</label>
+                    <select id="configDuration" class="custom-select">
+                      <option value="15-30">15 - 30s (TikTok Hook)</option>
+                      <option value="30-60" selected>30 - 60s (Standard Shorts)</option>
+                      <option value="60-90">60 - 90s (In-depth Reel)</option>
+                      <option value="10-20">10 - 20s (Fast Micro Short)</option>
+                    </select>
+                  </div>
+
+                  <div class="control-unit">
+                    <label for="configCaptionStyle"><i data-lucide="type" size="13"></i> Captions:</label>
+                    <select id="configCaptionStyle" class="custom-select">
+                      <option value="tiktok-viral" selected>TikTok Viral (Yellow Lower-Third)</option>
+                      <option value="modern-box">Modern Box (Clean Translucent Pill)</option>
+                      <option value="hormozi-white">Bold White (Clean Stroke)</option>
+                      <option value="neon-punch">Neon Cyan (Electric Mint)</option>
+                      <option value="minimal">Minimalist (Subtle Lower-Third)</option>
+                      <option value="clean">Clean (No Subtitles)</option>
+                    </select>
+                  </div>
+
+                  <button id="btnApplyGenerate" class="btn btn-primary btn-sm" title="Re-detect moments with selected count and duration">
+                    <i data-lucide="sparkles"></i>
+                    <span>Generate</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Candidates Cards List -->
+              <div id="candidatesList" class="candidates-grid">
+                <!-- Populated by JS -->
+                <div class="empty-candidates">
+                  <i data-lucide="sparkles"></i>
+                  <p>No moments detected yet.<br>Click <strong>Detect Moments</strong> to find viral clips!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Upload Modal -->
+  <div id="uploadModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i data-lucide="upload"></i> Upload Media File</h3>
+        <button class="modal-close" id="btnCloseUpload"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="dropZone" class="drop-zone">
+          <i data-lucide="file-video" class="drop-icon"></i>
+          <h4>Drag & drop your video or audio here</h4>
+          <p>or click to browse files (MP4, MOV, MP3, WAV, M4A)</p>
+          <input type="file" id="fileInput" accept="video/mp4,video/quicktime,video/*,audio/mpeg,audio/wav,audio/mp4,audio/*" style="display: none;">
+        </div>
+
+        <div id="uploadProgressContainer" class="progress-box" style="display: none;">
+          <div class="progress-label">
+            <span id="uploadFileName">Uploading file...</span>
+            <span id="uploadPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="uploadProgressBar" class="progress-bar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Caption Style:</label>
+          <select id="captionStyleSelect" class="form-input">
+            <option value="modern-box" selected>Modern Box (High-Contrast Clean Subtitles)</option>
+            <option value="neon-glow">Neon Punch (Bold Yellow & Cyan)</option>
+            <option value="clean">Clean (No subtitles, pure vertical 9:16 crop)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCancelUpload">Cancel</button>
+        <button class="btn btn-primary" id="btnSubmitUpload" disabled>Start Ingest</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- YouTube Modal -->
+  <div id="youtubeModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i data-lucide="youtube"></i> Import from YouTube</h3>
+        <button class="modal-close" id="btnCloseYoutube"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Paste a YouTube video link. AutoShorts will download the video and prepare it for transcription and clipping.</p>
+        <div class="form-group">
+          <label>YouTube Video URL:</label>
+          <input type="text" id="youtubeUrlInput" class="form-input" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+        <div id="ytStatusBox" class="status-message" style="display: none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCancelYoutube">Cancel</button>
+        <button class="btn btn-primary" id="btnSubmitYoutube">
+          <i data-lucide="download"></i>
+          <span>Download & Process</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3><i data-lucide="settings"></i> Platform & AI Configuration</h3>
+        <button class="modal-close" id="btnCloseSettings"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-grid">
+          <!-- Diagnostics -->
+          <div class="settings-section">
+            <h4><i data-lucide="activity"></i> System Diagnostics</h4>
+            <div class="diag-list">
+              <div class="diag-item">
+                <span>FFmpeg 7.1 Video Engine:</span>
+                <span id="diagFfmpeg" class="badge-success">Checking...</span>
+              </div>
+              <div class="diag-item">
+                <span>yt-dlp Downloader:</span>
+                <span id="diagYtdlp" class="badge-success">Checking...</span>
+              </div>
+              <div class="diag-item">
+                <span>Mode:</span>
+                <span class="badge-neutral">Direct Online Web Platform</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Keys -->
+          <div class="settings-section">
+            <h4><i data-lucide="key"></i> API Credentials</h4>
+            
+            <div class="form-group">
+              <label>Default AI Moments Provider:</label>
+              <select id="settingLlmProvider" class="form-input">
+                <option value="deepseek">DeepSeek (Recommended - High reasoning, ultra low cost)</option>
+                <option value="gemini">Google Gemini (Fast & capable)</option>
+                <option value="openai">OpenAI (GPT-4o)</option>
+                <option value="claude">Anthropic Claude (Top hook copywriting)</option>
+                <option value="groq">Groq (Ultra high speed)</option>
+                <option value="demo">Smart Heuristic / Demo (No API key needed)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Deepgram API Key (Transcription):</label>
+              <input type="password" id="keyDeepgram" class="form-input" placeholder="Paste your Deepgram API Key">
+            </div>
+
+            <div class="form-group">
+              <label>DeepSeek API Key (Moment Detection):</label>
+              <input type="password" id="keyDeepseek" class="form-input" placeholder="sk-...">
+            </div>
+
+            <div class="form-group">
+              <label>Google Gemini API Key:</label>
+              <input type="password" id="keyGemini" class="form-input" placeholder="AIzaSy...">
+            </div>
+
+            <div class="form-group">
+              <label>OpenAI API Key:</label>
+              <input type="password" id="keyOpenai" class="form-input" placeholder="sk-proj-...">
+            </div>
+
+            <div class="form-group">
+              <label>Anthropic Claude API Key:</label>
+              <input type="password" id="keyClaude" class="form-input" placeholder="sk-ant-...">
+            </div>
+
+            <div class="form-group">
+              <label>Groq API Key:</label>
+              <input type="password" id="keyGroq" class="form-input" placeholder="gsk_...">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCancelSettings">Close</button>
+        <button class="btn btn-primary" id="btnSaveSettings">
+          <i data-lucide="check"></i>
+          <span>Save Changes</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vertical 9:16 Video Player Modal -->
+  <div id="phonePlayerModal" class="modal-backdrop" style="display: none;">
+    <div class="phone-modal-card">
+      <button class="phone-modal-close" id="btnClosePhonePlayer"><i data-lucide="x"></i></button>
+      
+      <!-- Phone Bezel -->
+      <div class="phone-bezel">
+        <div class="phone-notch"></div>
+        <video id="phoneVideoPlayer" controls autoplay playsinline loop>
+          <source src="" type="video/mp4">
+        </video>
+      </div>
+
+      <!-- Clip Details Beside Phone -->
+      <div class="phone-details">
+        <div class="clip-header-badge">
+          <span id="modalClipRank" class="badge-rank">#1</span>
+          <span id="modalClipScore" class="badge-match">96% Viral Match</span>
+        </div>
+        <h3 id="modalClipHook">"Hook quote goes here"</h3>
+        <p id="modalClipRationale">Rationale description goes here.</p>
+        
+        <div class="modal-clip-buttons">
+          <a id="btnDownloadClipModal" href="#" download class="btn btn-primary">
+            <i data-lucide="download"></i>
+            <span>Download 9:16 MP4</span>
+          </a>
+          <a id="btnDownloadSrtModal" href="#" download class="btn btn-secondary">
+            <i data-lucide="file-text"></i>
+            <span>Download SRT</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
